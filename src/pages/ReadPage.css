@@ -1,0 +1,71 @@
+.read-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.read-header {
+  margin-bottom: 2rem;
+}
+
+.read-header h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.read-content {
+  /* Add your styles here */
+}
+
+.articles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.article-card {
+  padding: 1.5rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+}
+
+.article-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.article-dek {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1rem;
+}
+
+.article-meta {
+  font-size: 0.9rem;
+  color: #888;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.loading-state,
+.error-state,
+.empty-state,
+.loading-more,
+.end-state {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error-state button {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error-state button:hover {
+  background: #0056b3;
+}
