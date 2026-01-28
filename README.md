@@ -1,4 +1,4 @@
-# Frontend Take-Home: Infinite Article Reader
+# Frontend Take-Home: Paginated Article Reader
 
 ## Overview
 
