@@ -119,44 +119,6 @@ You can (and are encouraged to) add additional features. Below are a few suggest
 - **Refresh resilience:** Restore scroll position, loaded articles, and search query on page refresh using `localStorage`/`sessionStorage`.
 - **Try new layouts** Examples: Two-column with mini-nav, sticky header, reading-mode toggle. Focus on clean typography, spacing, and professional design.
 
-## Styling / Layout
-
-You can decide the overall layout as long as it's professional. Examples:
-
-- Two-column layout with a "Loaded articles" mini-nav
-- Sticky header showing active article + search
-- Reading-mode toggle (font size/line height)
-
----
-
-## Optional features (nice to have)
-
-These are bonus features that demonstrate extra polish and engineering thought. Pick any 1–3 if time allows:
-
-- Virtualized rendering / windowing after N articles (for handling very long feeds)
-- Scroll-to-article from a sidebar list
-- "Back to top" button that appears after scrolling
-- Theme toggle (light/dark) with persistence
-- Offline banner + auto-retry on reconnect
-- Reading progress indicator
-- Article bookmarking/favorites
-
----
-
-## Optional features (nice to have)
-
-These are bonus features that demonstrate extra polish and engineering thought. Pick any 1–3 if time allows:
-
-- Virtualized rendering / windowing after N articles (for handling very long feeds)
-- Scroll-to-article from a sidebar list
-- "Back to top" button that appears after scrolling
-- Theme toggle (light/dark) with persistence
-- Offline banner + auto-retry on reconnect
-- Reading progress indicator
-- Article bookmarking/favorites
-
----
-
 
 ## How to run locally
 
