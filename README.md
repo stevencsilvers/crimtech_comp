@@ -94,9 +94,9 @@ Fetches a single article by its ID. **Note:** The list endpoint already includes
 
 ## Core requirement
 
-### A) Article scrolling with pagination (feed of full articles)
+### Article scrolling with pagination (feed of full articles)
 
-Implement pagination/infinite scroll (Important note: don't fetch all articles at once):
+Implement pagination/infinite scroll (Important note: don't fetch all articles at once - please console log the api requests being made):
 - Load first page (`limit=10`)
 - Render full articles (title + metadata + HTML body)
 - Load next page using `nextCursor` when user scrolls near bottom
