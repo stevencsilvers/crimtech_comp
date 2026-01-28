@@ -54,9 +54,6 @@ Fetches a paginated list of articles. Supports search filtering via the `q` para
 - `limit` (optional): Number of articles per page. Default is 10.
 - `q` (optional): Search query string. Filters articles by matching against title, dek (summary), and author fields. Use `null` or omit for no filtering.
 
-**Returns:**
-
-
 
 **Response fields:**
 - `items`: Array of article objects with full content:
@@ -85,8 +82,6 @@ GET /articles/:id
 
 Fetches a single article by its ID. **Note:** The list endpoint already includes full article content (`contentHtml`), so you typically don't need this endpoint for the infinite scroll feed. You might use it if you want to implement a separate detail view or refresh a single article.
 
-**Returns:**
-
 
 **Response fields:**
 - `id`: Article identifier
@@ -94,8 +89,6 @@ Fetches a single article by its ID. **Note:** The list endpoint already includes
 - `author`: Author name
 - `publishedAt`: ISO 8601 timestamp
 - `contentHtml`: Full article body as HTML (you can render this with `dangerouslySetInnerHTML` or a sanitizer)
-
-**Note:** If the API is unavailable, your app should show a clear error state and a retry path.
 
 ---
 
@@ -179,8 +172,6 @@ Provide:
    - a brief architecture overview,
    - tradeoffs + what you'd improve next,
    - any known issues.
-
----
 
 ---
 
