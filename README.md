@@ -2,7 +2,7 @@
 
 ## Overview
 
-Build an "infinite" article reader that loads articles from a provided mock API and appends them as the user scrolls. Since this is a frontend-heavy deliverable we will also consider the styling. It should look clean and intentional (spacing, typography, loading states, empty states, etc).
+Build an infinite-scrolling article reader backed by a paginated mock API that loads and appends articles as the user scrolls.
 
 **Time expectation:** ~8–10 hours  
 **Focus:** frontend engineering (state, performance, UX, reliability)
