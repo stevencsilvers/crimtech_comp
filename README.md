@@ -92,7 +92,7 @@ Fetches a single article by its ID. **Note:** The list endpoint already includes
 
 ---
 
-## Core requirement
+## Requirement
 
 ### Article scrolling with pagination (feed of full articles)
 
@@ -103,7 +103,7 @@ Implement pagination/infinite scroll (Important note: don't fetch all articles a
 - Show "You're all caught up" when `hasMore=false`
 
 
-## Optional features
+### Optional features
 You can (and are encouraged to) add additional features. Below are a few suggested ideas—feel free to come up with your own.
 
 - **Active article tracking:** Track the most visible article and update URL/highlight/sidebar accordingly.
@@ -166,12 +166,9 @@ The API client is already configured to use `http://localhost:3001/api` by defau
 
 Provide:
 
+Please submit on Google classroom:
 1. A GitHub repo link
-2. A README containing (you can change this readme):
-   - how to run locally,
-   - a brief architecture overview,
-   - tradeoffs + what you'd improve next,
-   - any known issues.
+2. A screen recording of your code running / working. No need to voiceover or explain anything - we will ask about your code during final interviews.
 
 ---
 
