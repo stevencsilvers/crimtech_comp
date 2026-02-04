@@ -34,10 +34,6 @@ The API uses cursor-based pagination. When you request articles, you get:
 
 To get the first page, don't include a cursor (or pass `null`). To get subsequent pages, use the `nextCursor` value from the previous response.
 
-**Example flow:**
-1. First request: `GET /api/articles?limit=10` → returns articles 0-9, `nextCursor: "10"`, `hasMore: true`
-2. Second request: `GET /api/articles?cursor=10&limit=10` → returns articles 10-19, `nextCursor: "20"`, `hasMore: true`
-3. Continue until `hasMore: false`
 
 ### Endpoints
 
@@ -68,11 +64,6 @@ Fetches a paginated list of articles. Supports search filtering via the `q` para
 - `nextCursor`: String cursor to use for the next page, or `null` if no more pages
 - `hasMore`: Boolean indicating if more articles are available
 
-**Example requests:**
-- First page: `GET /api/articles?limit=10`
-- Next page: `GET /api/articles?cursor=10&limit=10`
-- Search: `GET /api/articles?q=technology&limit=10`
-- Search next page: `GET /api/articles?cursor=10&limit=10&q=technology`
 
 #### 2) Article detail (optional)
 
