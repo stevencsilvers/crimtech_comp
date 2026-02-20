@@ -1,69 +1,210 @@
 /**
  * Read Page - Infinite Article Reader
  * 
- * This is your main page for the infinite scroll article reader.
- * 
- * TODO: Implement:
+ * Features implemented:
  * - Infinite scroll with IntersectionObserver
  * - Active article tracking
  * - Refresh resilience (localStorage/sessionStorage)
- * - Prefetch next page
- * - Search bar with debouncing
+ * - Search bar with debouncing (300ms)
  * - Loading, error, and empty states
+ * - Full article content rendering
  */
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
 import { fetchArticles } from '../api/client';
 import type { ArticleListItem } from '../types';
 import './ReadPage.css';
 
 export default function ReadPage() {
-  const { articleId } = useParams();
   const [articles, setArticles] = useState<ArticleListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
+  
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // TODO: Implement infinite scroll
-  // TODO: Implement active article tracking
-  // TODO: Implement refresh resilience
-  // TODO: Implement prefetch
-  // TODO: Implement search with debouncing
-
+  // Load articles from localStorage on mount
   useEffect(() => {
-    // Initial load
-    loadArticles();
+    const savedState = localStorage.getItem('articleReaderState');
+    if (savedState) {
+      try {
+        const { articles: saved, nextCursor: savedCursor, searchQuery: savedQuery } = JSON.parse(savedState);
+        setArticles(saved);
+        setNextCursor(savedCursor);
+        setSearchQuery(savedQuery);
+        setLoading(false);
+        
+        // Restore scroll position after render
+        setTimeout(() => {
+          const savedScroll = sessionStorage.getItem('scrollPosition');
+          if (savedScroll) {
+            window.scrollTo(0, parseInt(savedScroll, 10));
+          }
+        }, 100);
+      } catch (e) {
+        // If localStorage parsing fails, do initial load
+        loadArticles();
+      }
+    } else {
+      loadArticles();
+    }
   }, []);
 
-  const loadArticles = async (cursor: string | null = null) => {
+  // Save scroll position on scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      sessionStorage.setItem('scrollPosition', String(window.scrollY));
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Setup IntersectionObserver for infinite scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoadingMore && !loading) {
+          loadMoreArticles();
+        }
+      },
+      { rootMargin: '500px' } // Start loading 500px before reaching bottom
+    );
+
+    if (sentinelRef.current) {
+      observer.observe(sentinelRef.current);
+    }
+
+    return () => {
+      if (sentinelRef.current) {
+        observer.unobserve(sentinelRef.current);
+      }
+    };
+  }, [hasMore, isLoadingMore, loading]);
+
+  // Track active article (most visible)
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const articleId = entry.target.getAttribute('data-article-id');
+            setActiveArticleId(articleId);
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    document.querySelectorAll('[data-article-id]').forEach((el) => {
+      observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [articles]);
+
+  const loadArticles = async (cursor: string | null = null, query: string = '') => {
     try {
       setLoading(true);
       setError(null);
       
+      console.log('📡 API Request: fetchArticles', { cursor, limit: 10, q: query || null });
+      
       const response = await fetchArticles({
         cursor,
+        limit: 10,
+        q: query || null,
+      });
+      
+      console.log('API Response:', { itemCount: response.items.length, hasMore: response.hasMore, nextCursor: response.nextCursor });
+      
+      setArticles(response.items);
+      setNextCursor(response.nextCursor);
+      setHasMore(response.hasMore);
+      
+      // Save to localStorage
+      localStorage.setItem('articleReaderState', JSON.stringify({
+        articles: response.items,
+        nextCursor: response.nextCursor,
+        searchQuery: query,
+      }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load articles');
+      console.error('API Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadMoreArticles = async () => {
+    if (!nextCursor || isLoadingMore || !hasMore) return;
+    
+    try {
+      setIsLoadingMore(true);
+      
+      console.log('📡 API Request: fetchArticles (load more)', { cursor: nextCursor, limit: 10, q: searchQuery || null });
+      
+      const response = await fetchArticles({
+        cursor: nextCursor,
         limit: 10,
         q: searchQuery || null,
       });
       
-      setArticles(prev => cursor ? [...prev, ...response.items] : response.items);
+      console.log('API Response:', { itemCount: response.items.length, hasMore: response.hasMore, nextCursor: response.nextCursor });
+      
+      setArticles(prev => [...prev, ...response.items]);
       setNextCursor(response.nextCursor);
       setHasMore(response.hasMore);
+      
+      // Update localStorage
+      localStorage.setItem('articleReaderState', JSON.stringify({
+        articles: [...articles, ...response.items],
+        nextCursor: response.nextCursor,
+        searchQuery,
+      }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load articles');
+      setError(err instanceof Error ? err.message : 'Failed to load more articles');
+      console.error('API Error:', err);
     } finally {
-      setLoading(false);
+      setIsLoadingMore(false);
     }
+  };
+
+  // Debounced search handler (300ms debounce)
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+    
+    debounceTimerRef.current = setTimeout(() => {
+      setArticles([]);
+      setNextCursor(null);
+      setHasMore(true);
+      loadArticles(null, query);
+      sessionStorage.removeItem('scrollPosition');
+    }, 300);
   };
 
   return (
     <div className="read-page">
       <header className="read-header">
         <h1>Article Reader</h1>
-        {/* TODO: Add search bar */}
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search articles..."
+            value={searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            className="search-input"
+          />
+        </div>
       </header>
       
       <main className="read-content">
@@ -74,7 +215,7 @@ export default function ReadPage() {
         {error && (
           <div className="error-state">
             <p>Error: {error}</p>
-            <button onClick={() => loadArticles()}>Retry</button>
+            <button onClick={() => loadArticles(null, searchQuery)}>Retry</button>
           </div>
         )}
         
@@ -86,7 +227,11 @@ export default function ReadPage() {
         
         <div className="articles-list">
           {articles.map((article) => (
-            <article key={article.id} className="article-card">
+            <article 
+              key={article.id} 
+              className={`article-card ${activeArticleId === article.id ? 'active' : ''}`}
+              data-article-id={article.id}
+            >
               <h2>{article.title}</h2>
               <p className="article-dek">{article.dek}</p>
               <div className="article-meta">
@@ -96,13 +241,21 @@ export default function ReadPage() {
                 <span>•</span>
                 <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
               </div>
-              {/* TODO: Render full article content */}
+              {article.imageUrl && (
+                <img src={article.imageUrl} alt={article.title} className="article-image" />
+              )}
+              <div 
+                className="article-content"
+                dangerouslySetInnerHTML={{ __html: article.contentHtml }}
+              />
             </article>
           ))}
         </div>
         
-        {/* TODO: Add sentinel element for IntersectionObserver */}
-        {loading && articles.length > 0 && (
+        {/* Sentinel element for IntersectionObserver */}
+        <div ref={sentinelRef} className="sentinel" />
+        
+        {isLoadingMore && (
           <div className="loading-more">Loading more articles...</div>
         )}
         
