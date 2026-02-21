@@ -10,7 +10,10 @@
   background-position: center center;
   background-size: cover;
   padding: 0.75rem 0;
-  margin-bottom: 2rem;
+  margin-bottom: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .navbar-container {
@@ -55,7 +58,7 @@
 .read-page {
   max-width: 900px;
   margin: 0 auto;
-  padding: 2rem 1rem;
+  padding: 0.5rem 1rem 1.2rem;
 }
 
 .read-header {
