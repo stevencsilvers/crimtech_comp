@@ -4,7 +4,7 @@
 }
 
 .navbar {
-  background-color: #97211a;
+  background-color: #9d120a;
   background-image: url('./crimson.png');
   background-repeat: no-repeat;
   background-position: center center;
@@ -17,12 +17,13 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 0 0.3rem;
+  margin-left: 10vw;
 }
 
 .navbar-links {
   display: flex;
-  gap: 0.8rem;
-  justify-content: space-between;
+  gap: 1.2rem;
+  justify-content: flex-start;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -32,9 +33,10 @@
 .navbar-link {
   color: white;
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 600;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 0.90rem;
+  font-weight: 900;
+  font-family: "lato", sans-serif;
+  font-style: normal;
   cursor: pointer;
   transition: text-decoration 0.2s ease;
   white-space: nowrap;
@@ -47,7 +49,7 @@
 
 .navbar-divider {
   color: white;
-  margin: 0 -0.75rem;
+  margin: 0 0.5rem;
 }
 
 .read-page {
@@ -58,24 +60,25 @@
 
 .read-header {
   margin-bottom: 2rem;
-  border-bottom: 3px solid #97211a;
-  padding-bottom: 1.5rem;
+  border-bottom: 3px solid #9d120a;
+  padding-bottom: 0.2rem;
 }
 
 .read-header h1 {
   font-size: 3.5rem;
-  font-weight: 700;
-  color: #97211a;
+  font-weight: 400;
+  color: #9d120a;
   text-align: center;
   margin: 0 0 0.5rem 0;
   letter-spacing: -1px;
+  font-family: "bigmoore", serif;
+  font-style: normal;
 }
 
 .header-subtitle {
   text-align: center;
-  font-size: 0.9rem;
-  color: #333;
-  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #000;
   letter-spacing: 0.05em;
 }
 
@@ -88,31 +91,40 @@
 }
 
 .header-meta-left {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: "lato", sans-serif;
+  font-weight: 300;
+  font-style: normal;
 }
 
 .header-meta-right {
-  font-weight: 600;
+  font-family: "lato", sans-serif;
+  font-weight: 300;
+  font-style: normal;
 }
 
 .search-container {
   margin-top: 1.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .search-input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
   font-size: 1rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Georgia', 'Garamond', serif;
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239d120a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: 0.85rem center;
+  background-size: 1rem;
 }
 
 .search-input:focus {
   outline: none;
-  border-color: #97211a;
-  box-shadow: 0 0 0 2px rgba(151, 33, 26, 0.1);
+  border-color: #9d120a;
+  box-shadow: 0 0 0 2px rgba(157, 18, 10, 0.1);
 }
 
 .read-content {
@@ -141,16 +153,18 @@
 }
 
 .article-card h2 {
-  font-size: 1.75rem;
-  font-weight: 700;
+  font-size: 2.25rem;
+  font-weight: 600;
   margin: 0 0 0.75rem 0;
   line-height: 1.3;
-  color: #1a1a1a;
+  color: #75170e;
+  font-family: "sirba-web", serif !important;
+  font-style: normal;
 }
 
 .article-dek {
   font-size: 1.1rem;
-  color: #555;
+  color: #000;
   margin-bottom: 1rem;
   line-height: 1.5;
   font-weight: 400;
@@ -162,6 +176,28 @@
   display: flex;
   gap: 0.5rem;
   margin-bottom: 1.25rem;
+  font-family: "marine", sans-serif !important;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.article-meta span {
+  font-family: "marine", sans-serif !important;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.article-author {
+  color: #b21f10;
+  text-transform: uppercase;
+}
+
+.article-author-label {
+  color: #000;
+}
+
+.article-meta span:nth-child(5) {
+  color: #811307;
 }
 
 .article-image {
@@ -174,7 +210,7 @@
 .article-content {
   font-size: 1.1rem;
   line-height: 1.7;
-  color: #333;
+  color: #000;
 }
 
 .article-content p {
@@ -199,7 +235,7 @@
 .error-state button {
   margin-top: 1rem;
   padding: 0.75rem 1.5rem;
-  background: #97211a;
+  background: #9d120a;
   color: white;
   border: none;
   border-radius: 4px;

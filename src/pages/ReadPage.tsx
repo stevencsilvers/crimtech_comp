@@ -196,6 +196,27 @@ export default function ReadPage() {
     window.location.reload();
   };
 
+  const getRelativeTime = (publishedAt: string) => {
+    const now = new Date();
+    const published = new Date(publishedAt);
+    const diffMs = now.getTime() - published.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffHours < 24) {
+      return `${diffHours} ${diffHours === 1 ? 'HOUR' : 'HOURS'} AGO`;
+    } else if (diffDays === 1) {
+      return 'YESTERDAY';
+    } else if (diffDays <= 7) {
+      return `${diffDays} DAYS AGO`;
+    } else {
+      const month = published.toLocaleDateString('en-US', { month: 'long' }).toUpperCase();
+      const day = published.getDate();
+      const year = published.getFullYear();
+      return `${month} ${day}, ${year}`;
+    }
+  };
+
   return (
     <>
       <nav className="navbar">
@@ -222,23 +243,24 @@ export default function ReadPage() {
       <div className="read-page">
       <header className="read-header">
         <h1>The Harvard Crimson</h1>
-        <div className="header-subtitle">The University Daily Est. 1873</div>
         <div className="header-meta">
           <span className="header-meta-left">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </span>
+          <span className="header-subtitle">The University Daily Est. 1873</span>
           <span className="header-meta-right">VOLUME CLIII</span>
         </div>
-        <div className="search-container">
-          <input
-            type="text"
-            placeholder="Search articles..."
-            value={searchQuery}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="search-input"
-          />
-        </div>
       </header>
+      
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search articles..."
+          value={searchQuery}
+          onChange={(e) => handleSearch(e.target.value)}
+          className="search-input"
+        />
+      </div>
       
       <main className="read-content">
         {loading && articles.length === 0 && (
@@ -268,11 +290,13 @@ export default function ReadPage() {
               <h2>{article.title}</h2>
               <p className="article-dek">{article.dek}</p>
               <div className="article-meta">
-                <span>By {article.author}</span>
+                <span className="article-author">
+                  <span className="article-author-label">By</span> {article.author}
+                </span>
                 <span>•</span>
                 <span>{article.readingTimeMins} min read</span>
                 <span>•</span>
-                <span>{new Date(article.publishedAt).toLocaleDateString()}</span>
+                <span>{getRelativeTime(article.publishedAt)}</span>
               </div>
               {article.imageUrl && (
                 <img src={article.imageUrl} alt={article.title} className="article-image" />
