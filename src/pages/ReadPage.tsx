@@ -192,10 +192,43 @@ export default function ReadPage() {
     }, 300);
   };
 
+  const handleNavClick = () => {
+    window.location.reload();
+  };
+
   return (
-    <div className="read-page">
+    <>
+      <nav className="navbar">
+        <div className="navbar-container">
+          <ul className="navbar-links">
+            <li><a className="navbar-link" onClick={handleNavClick}>News</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Opinion</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Arts</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Blog</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Magazine</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Metro</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Multimedia</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Sports</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Newsletter</a></li>
+            <li className="navbar-divider">|</li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Print Delivery</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Editor's Picks</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Tips</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Donate</a></li>
+            <li><a className="navbar-link" onClick={handleNavClick}>Programs</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div className="read-page">
       <header className="read-header">
-        <h1>Article Reader</h1>
+        <h1>The Harvard Crimson</h1>
+        <div className="header-subtitle">The University Daily Est. 1873</div>
+        <div className="header-meta">
+          <span className="header-meta-left">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          </span>
+          <span className="header-meta-right">VOLUME CLIII</span>
+        </div>
         <div className="search-container">
           <input
             type="text"
@@ -264,5 +297,6 @@ export default function ReadPage() {
         )}
       </main>
     </div>
+    </>
   );
 }
