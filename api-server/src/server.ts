@@ -26,12 +26,11 @@ app.get('/api/articles', async (req, res) => {
     // Apply search filter if query provided
     let filteredArticles = allArticles;
     if (query) {
-      const searchLower = query.toLowerCase();
-      filteredArticles = allArticles.filter(article => 
-        article.title.toLowerCase().includes(searchLower) ||
-        article.dek.toLowerCase().includes(searchLower) ||
-        article.author.toLowerCase().includes(searchLower)
-      );
+      const terms = query.toLowerCase().split(/\s+/).filter(Boolean);
+      filteredArticles = allArticles.filter(article => {
+        const haystack = `${article.title} ${article.dek} ${article.author} ${article.contentHtml}`.toLowerCase();
+        return terms.every(term => haystack.includes(term));
+      });
     }
 
     // Parse cursor to get starting index

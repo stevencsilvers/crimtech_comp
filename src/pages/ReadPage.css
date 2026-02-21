@@ -20,7 +20,6 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 0 0.3rem;
-  margin-left: 10vw;
 }
 
 .navbar-links {
@@ -29,7 +28,7 @@
   justify-content: flex-start;
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 1.5rem;
   flex-wrap: nowrap;
 }
 

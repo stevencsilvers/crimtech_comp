@@ -22,37 +22,26 @@ export default function ReadPage() {
   const [hasMore, setHasMore] = useState(true);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
   
   const sentinelRef = useRef<HTMLDivElement>(null);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load articles from localStorage on mount
+  const buildApiQuery = (category: string | null, query: string) => {
+    const parts = [category, query].filter(Boolean);
+    return parts.join(' ').trim();
+  };
+
+  // Load articles on mount based on c/q params
   useEffect(() => {
-    const savedState = localStorage.getItem('articleReaderState');
-    if (savedState) {
-      try {
-        const { articles: saved, nextCursor: savedCursor, searchQuery: savedQuery } = JSON.parse(savedState);
-        setArticles(saved);
-        setNextCursor(savedCursor);
-        setSearchQuery(savedQuery);
-        setLoading(false);
-        
-        // Restore scroll position after render
-        setTimeout(() => {
-          const savedScroll = sessionStorage.getItem('scrollPosition');
-          if (savedScroll) {
-            window.scrollTo(0, parseInt(savedScroll, 10));
-          }
-        }, 100);
-      } catch (e) {
-        // If localStorage parsing fails, do initial load
-        loadArticles();
-      }
-    } else {
-      loadArticles();
-    }
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get('c');
+    const q = params.get('q') || '';
+    setSearchQuery(q);
+    setActiveCategory(category);
+    loadArticles(null, buildApiQuery(category, q));
   }, []);
 
   // Save scroll position on scroll
@@ -146,13 +135,14 @@ export default function ReadPage() {
     
     try {
       setIsLoadingMore(true);
-      
-      console.log('📡 API Request: fetchArticles (load more)', { cursor: nextCursor, limit: 10, q: searchQuery || null });
+      const apiQuery = buildApiQuery(activeCategory, searchQuery);
+
+      console.log('📡 API Request: fetchArticles (load more)', { cursor: nextCursor, limit: 10, q: apiQuery || null });
       
       const response = await fetchArticles({
         cursor: nextCursor,
         limit: 10,
-        q: searchQuery || null,
+        q: apiQuery || null,
       });
       
       console.log('API Response:', { itemCount: response.items.length, hasMore: response.hasMore, nextCursor: response.nextCursor });
@@ -187,13 +177,47 @@ export default function ReadPage() {
       setArticles([]);
       setNextCursor(null);
       setHasMore(true);
-      loadArticles(null, query);
+      const params = new URLSearchParams(window.location.search);
+      if (query) {
+        params.set('q', query);
+      } else {
+        params.delete('q');
+      }
+      if (activeCategory) {
+        params.set('c', activeCategory);
+      } else {
+        params.delete('c');
+      }
+      const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+      window.history.replaceState({}, '', newUrl);
+      loadArticles(null, buildApiQuery(activeCategory, query));
       sessionStorage.removeItem('scrollPosition');
     }, 300);
   };
 
-  const handleNavClick = () => {
-    window.location.reload();
+  const handleNavClick = (category?: string) => {
+    const nextCategory = category || null;
+    const nextSearchQuery = category ? searchQuery : '';
+    setActiveCategory(nextCategory);
+    setSearchQuery(nextSearchQuery);
+    setArticles([]);
+    setNextCursor(null);
+    setHasMore(true);
+    const params = new URLSearchParams(window.location.search);
+    if (nextCategory) {
+      params.set('c', nextCategory);
+    } else {
+      params.delete('c');
+    }
+    if (nextSearchQuery) {
+      params.set('q', nextSearchQuery);
+    } else {
+      params.delete('q');
+    }
+    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.replaceState({}, '', newUrl);
+    loadArticles(null, buildApiQuery(nextCategory, nextSearchQuery));
+    sessionStorage.removeItem('scrollPosition');
   };
 
   const getRelativeTime = (publishedAt: string) => {
@@ -203,7 +227,9 @@ export default function ReadPage() {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffHours < 24) {
+    if (diffHours === 0) {
+      return 'JUST NOW';
+    } else if (diffHours < 24) {
       return `${diffHours} ${diffHours === 1 ? 'HOUR' : 'HOURS'} AGO`;
     } else if (diffDays === 1) {
       return 'YESTERDAY';
@@ -222,21 +248,16 @@ export default function ReadPage() {
       <nav className="navbar">
         <div className="navbar-container">
           <ul className="navbar-links">
-            <li><a className="navbar-link" onClick={handleNavClick}>News</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Opinion</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Arts</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Blog</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Magazine</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Metro</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Multimedia</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Sports</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Newsletter</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick('Technology')}>Technology</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick('Science')}>Science</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick('Business')}>Business</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick('Health')}>Health</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick('Culture')}>Culture</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick('Politics')}>Politics</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick('Environment')}>Environment</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick('Education')}>Education</a></li>
             <li className="navbar-divider">|</li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Print Delivery</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Editor's Picks</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Tips</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Donate</a></li>
-            <li><a className="navbar-link" onClick={handleNavClick}>Programs</a></li>
+            <li><a className="navbar-link" onClick={() => handleNavClick()}>Home</a></li>
           </ul>
         </div>
       </nav>
